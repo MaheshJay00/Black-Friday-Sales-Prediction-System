@@ -1,0 +1,84 @@
+import pandas as pd
+import numpy as np
+import matplotlib as pyplot
+import seaborn as sns
+data = pd.read_csv('BlackFriday.csv')
+data.info()
+
+data.head()
+
+sns.countplot(data['Gender'])
+
+sns.countplot(data['Age'], hue=data['Gender'])
+data.describe()
+
+data['User_ID'].nunique()
+def unique(column):
+    x = np.array(column)
+    print(np.unique(x))
+print("The unique ID numbers of customers occupations:")
+unique(data['Occupation'])
+
+occupations_id = list(range(0, 21))
+spent_money = []
+for oid in occupations_id:
+    spent_money.append(data[data['Occupation'] == oid]['Purchase'].sum())
+
+spent_money
+import matplotlib.pyplot as plt; plt.rcdefaults()
+import matplotlib.pyplot as plt
+
+objects = ('0', '1', '2', '3', '4', '5','6','7','8','9','10', '11','12', '13', '14', '15', '16', '17', '18', '19', '20')
+y_pos = np.arange(len(objects))
+
+plt.bar(y_pos, spent_money, align='center', alpha=0.5)
+plt.xticks(y_pos, objects)
+plt.ylabel('Money spent')
+plt.title('Occupation ID')
+
+plt.show()
+
+data['City_Category'].nunique()
+explode = (0.1, 0, 0)
+fig1, ax1 = plt.subplots(figsize=(11,6))
+ax1.pie(data['City_Category'].value_counts(), explode=explode, labels=data['City_Category'].unique(), autopct='%1.1f%%')
+plt.legend()
+plt.show()
+
+data = data.drop(['Product_Category_3'], axis=1)
+data['Product_Category_2'].fillna((data['Product_Category_2'].mean()), inplace=True)
+data.info()
+
+data = data.drop(['User_ID','Product_ID'], axis=1)
+data.info()
+
+df_Gender = pd.get_dummies(data['Gender'])
+df_Age = pd.get_dummies(data['Age'])
+df_City_Category = pd.get_dummies(data['City_Category'])
+df_Stay_In_Current_City_Years = pd.get_dummies(data['Stay_In_Current_City_Years'])
+
+data_final = pd.concat([data, df_Gender, df_Age, df_City_Category, df_Stay_In_Current_City_Years], axis=1)
+
+data_final.head()
+
+X = data_final[['Occupation', 'Marital_Status', 'Product_Category_2', 'F', 'M', '0-17', '18-25', '26-35', '36-45', '46-50', '51-55', '55+', 'A', 'B', 'C', '0', '1', '2', '3', '4+']]
+y = data_final['Purchase']
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4)
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+
+lm = LinearRegression()
+dtr = DecisionTreeRegressor()
+
+fit1 = lm.fit(X_train, y_train)#Here we fit training data to linear regressor
+fit2 = dtr.fit(X_train, y_train)#Here we fit training data to Decision Tree Regressor
+
+print("Accuracy Score of Linear regression on train set",fit1.score(X_train,y_train)*100)
+print("Accuracy Score of Decision Tree on train set",fit2.score(X_train,y_train)*100)
+print("Accuracy Score of Linear regression on test set",fit1.score(X_test,y_test)*100)
+print("Accuracy Score of Decision Tree on test set",fit2.score(X_test,y_test)*100)
+
